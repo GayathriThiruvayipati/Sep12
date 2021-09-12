@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { Link } from "react-router-dom";
-
-const Register = ({addUser}) =>{
+import axios from "axios"
+const Register = () =>{
 
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
@@ -10,8 +10,13 @@ const Register = ({addUser}) =>{
 
     const onSubmit = (e) =>{
       e.preventDefault()
-  
-      addUser({ name, email, password, confirmpassword})
+      const url = "http://localhost:3000/users/add";
+      const data = { name, email, password, confirmpassword};
+      axios.post(url,data).then(()=>{
+        console.log("Ok");
+      }).catch((err)=>{
+        console.log("Error: "+ err)
+      });
   
       setName('')
       setEmail('')
