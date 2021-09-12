@@ -1,5 +1,5 @@
 const router = require('express').Router();
-var urll = process.env.ATLAS_URI;
+var url = process.env.ATLAS_URI;
 var MongoClient = require('mongodb').MongoClient;
 router.route('/').get((req,res)=>{
 
@@ -8,11 +8,12 @@ router.route('/').get((req,res)=>{
 router.route('/add').post((req,res)=>{
 
     console.log(req.body);
-     MongoClient.connect(urll, function (err, db) {
+     MongoClient.connect(url, function (err, db) {
          if (err) throw err;
          var dbo = db.db("test");
              dbo.collection("UserTable").insertOne(req.body, function (err, res) {
                if (err) throw err;
+                res.status(404).send({ "user": "Not oK" });
               db.close();
             });
         });
@@ -21,8 +22,9 @@ router.route('/add').post((req,res)=>{
 });
 router.route('/login').post((req,res)=>{
 
-  MongoClient.connect(urll, function (err, db) {
+  MongoClient.connect(url, function (err, db) {
     var data = req.body;
+    var flag = false;
     if (err) throw err;
     var dbo = db.db("test");
     console.log(req.body);
@@ -30,14 +32,16 @@ router.route('/login').post((req,res)=>{
     dbo.collection("UserTable").find({ "email":data.email, "password":data.password}).toArray(function (err, result) {
       if (err) throw err;
       if(result.length!=0){
-          console.log("Item exist");
-          console.log(result);
-      }
-      console.log("Item not found"+result);
-      res.status(200).send({ "user": "ok" });
-      db.close();
-    });//db findone ends here
+        res.status(200).send({ "user": "ok" });
+        db.close();
+        flag = true;
 
+      }
+    });//db findone ends here
+if(!flag){
+  db.close();
+   res.status(404).send({ "user": "Not ok" });
+}
   });//mongodb connection ends here
 
 });
