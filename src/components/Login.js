@@ -1,12 +1,24 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-
+import axios from "axios"
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const onSubmit = (e) =>{
+    e.preventDefault()
 
+    const url = "http://localhost:3000/users/login";
+    const data = { email, password};
+    axios.post(url,data).then(()=>{
+      console.log("Ok")
+    }).catch((err)=>{
+      console.log("Error: "+ err)
+    });
+    setEmail('')
+    setPassword('')
+  }
   return (
-    <form className="add-form">
+    <form className="add-form" onSubmit={onSubmit}>
       <h3>Login</h3>
       <div className="form-control">
         <label>Email</label>
